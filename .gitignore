@@ -1,0 +1,10 @@
+
+*.bak
+*.csv
+*.log
+.pdm-python
+*.png
+__pycache__
+*.sqlite
+*.txt
+.venv
