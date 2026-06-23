@@ -1,0 +1,9 @@
+.pdm-python
+__pycache__
+
+*.sqlite
+*.csv
+*.txt
+*.log
+*.bak
+*.png
