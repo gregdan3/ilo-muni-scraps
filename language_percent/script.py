@@ -61,7 +61,6 @@ def get_top_words(
         if (not no_filter) and text in INTERFERENCE:
             removed_hits += hits
             continue
-        # Convert UCSUR glyphs to their parent word
         parent = UCSUR_MAP.get(text, text)
 
         combined[parent] += hits
@@ -74,11 +73,11 @@ def get_top_words(
     return reranked[:limit], removed_hits
 
 
-def cleaned_ranks(cur, day: int = 0, no_filter: bool = False):
+def cleaned_ranks(cur, day: int = 0, no_filter: bool = False, limit: int = 500):
     linku = fetch_linku_data()
 
-    rows, to_remove = get_top_words(cur, day)
-    total_hits = get_total_hits(cur, day)
+    rows, to_remove = get_top_words(cur, day=day, no_filter=no_filter, limit=limit)
+    total_hits = get_total_hits(cur, day=day)
     total_hits -= to_remove
 
     cumulative_pct = 0
@@ -144,10 +143,11 @@ def main():
 
     day: int = DAYS[args.day]
     no_filter: bool = args.no_filter
+    limit = args.limit
 
     conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
-    cleaned_ranks(cur, day, no_filter)
+    cleaned_ranks(cur, day, no_filter, limit)
 
 
 if __name__ == "__main__":
