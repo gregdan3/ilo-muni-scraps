@@ -4,6 +4,9 @@ import importlib.resources
 from math import log10
 from symspellpy import SymSpell
 
+import numpy as np
+from weighted_levenshtein import lev
+
 LINKU = "https://api.linku.la/v2/words"
 DATA: dict[str, Any] = requests.get(LINKU).json()
 WORDS: list[str] = [
@@ -31,6 +34,10 @@ def common_prefix_length(a: str, b: str) -> int:
     return n
 
 
+def shared_letters(a: str, b: str) -> bool:
+    return set(a) == set(b)
+
+
 def main():
     for word in WORDS:
         suggestions = sym_spell.lookup(word, verbosity=9999)
@@ -38,9 +45,11 @@ def main():
         ranked = sorted(
             suggestions,
             key=lambda s: (
-                (log10(s.count + 1) / 3)
+                (log10(s.count + 1) / 5)
                 - 2 * s.distance
                 + 0.5 * common_prefix_length(word, s.term)
+                + 1.0 * shared_letters(word, s.term)
+                + 0.5 * (shared_letters(word, s.term) - 1)
                 - 0.5 * abs(len(s.term) - len(word))  # length difference
             ),
             reverse=True,
